@@ -2,19 +2,25 @@
 	{
 		"repo": "binutils",
 		"vcs": "git",
-		"url": "git://sourceware.org/git/binutils-gdb.git",
+		"url": "/home/herb/src/binutils",
 		"phases":
 		{
-			"configure":
+			"prep":
+			[
+				{
+					"outdir": 1
+				}
+			],
+			"config":
 			[
 				{
 					"call": "configure",
 					"params":
 					[
-						"--prefix=/tools",
-						"--with-sysroot=/home/lfs",
-						"--with-lib-path=/tools/lib",
-						"--target=amd64-pc-linux-gnu",
+						"--prefix=/home/lfs/tools",
+						"--with-sysroot=/home/lfs/build",
+						"--with-lib-path=/home/lfs/tools/lib",
+						"--target=x86_64-pc-linux-gnu",
 						"--disable-nls",
 						"--disable-werror"
 					]
@@ -37,13 +43,24 @@
 						"install"
 					]
 				}
+			],
+			"clean":
+			[
+				{
+					"call": "make",
+					"system": 1,
+					"params":
+					[
+						"clean"
+					]
+				}
 			]
 		}
 	},
 	{
 		"repo": "gcc",
 		"vcs": "git",
-		"url": "git://gcc.gnu.org/git/gcc.git",
+		"url": "/home/herb/src/gcc",
 		"phases":
 		{
 			"prep":
@@ -85,22 +102,25 @@
 					"call": "for file in $(find gcc\/config -name linux64.h -o -name linux.h -o -name sysv4.h)\ndo\n  sed -i -e 's@\/lib\\(64\\)\\?\\(32\\)\\?\/ld@\/tools&@g' -e 's@\/usr@\/tools@g' $file\n  echo '\n#undef STANDARD_STARTFILE_PREFIX_1\n#undef STANDARD_STARTFILE_PREFIX_2\n#define STANDARD_STARTFILE_PREFIX_1 \"\/tools\/lib\/\"\n#define STANDARD_STARTFILE_PREFIX_2 \"\"' >> $file\ndone",
 					"system": 1,
 					"once": 1
+				},
+				{
+					"outdir": 1
 				}
 			],
-			"configure":
+			"config":
 			[
 				{
 					"call": "configure",
 					"params":
 					[
-						"--target=amd64-pc-linux-gnu",
-						"--prefix=/tools",
+						"--target=x86_64-pc-linux-gnu",
+						"--prefix=/home/lfs/tools",
 						"--with-glibc-version=2.11",
-						"--with-sysroot=/home/lfs",
+						"--with-sysroot=/home/lfs/build",
 						"--with-newlib",
 						"--without-headers",
-						"--with-local-prefix=/tools",
-						"--with-native-system-header-dir=/tools/include",
+						"--with-local-prefix=/home/lfs/tools",
+						"--with-native-system-header-dir=/home/lfs/tools/include",
 						"--disable-nls",
 						"--disable-shared",
 						"--disable-multilib",
@@ -120,6 +140,7 @@
 			[
 				{
 					"call": "make",
+					"vanilla": 1,
 					"system": 1
 				}
 			],
@@ -131,6 +152,17 @@
 					"params":
 					[
 						"install"
+					]
+				}
+			],
+			"clean": 
+			[
+				{
+					"call": "make",
+					"system": 1,
+					"params":
+					[
+						"clean"
 					]
 				}
 			]
